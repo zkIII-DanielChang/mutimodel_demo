@@ -1,0 +1,5 @@
+2026-11-19 17:06:30 | INFO | run_face | 设备信息: {'onnxruntime_version': '1.24.4', 'available_providers': ['DmlExecutionProvider', 'CPUExecutionProvider'], 'registered_dll_dirs': ['D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cublas\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cuda_nvrtc\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cuda_runtime\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cudnn\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cufft\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\nvjitlink\\bin'], 'preload_dlls_ok': True}
+2026-11-19 17:06:30 | INFO | run_face | CUDA 可用: False
+2026-11-19 17:06:34 | INFO | face.detector | UniFace RetinaFace 检测器已加载, providers=['DmlExecutionProvider', 'CPUExecutionProvider']
+2026-11-19 17:06:34 | INFO | run_face | 头部姿态估计已启用，按 c 键可校准 pitch 零偏
+2026-11-19 17:06:34 | INFO | run_face | CSV 日志: D:\mutimodel_demo\data\logs\face_detection.csv

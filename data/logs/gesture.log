@@ -1,0 +1,10 @@
+WARNING: Logging before InitGoogle() is written to STDERR
+I0000 00:00:1795079238.877624   13500 hand_gesture_recognizer_graph.cc:257] Custom gesture classifier is not defined.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1795079238.890849   10060 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1795079238.900471   10060 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1795079238.901103    9048 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1795079238.901220    9048 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+2026-11-19 17:07:18 | INFO | gesture.hand_recognizer | MediaPipe 手势识别器已加载: D:\mutimodel_demo\models\gesture_recognizer.task
+2026-11-19 17:07:19 | INFO | run_gesture | CSV 日志: D:\mutimodel_demo\data\logs\gesture.csv
+W0000 00:00:1795079239.820592   17132 landmark_projection_calculator.cc:81] Using NORM_RECT without IMAGE_DIMENSIONS is only supported for the square ROI. Provide IMAGE_DIMENSIONS or use PROJECTION_MATRIX.

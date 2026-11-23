@@ -1,0 +1,7 @@
+project_root: "."
+data_dir: "data"
+logs_dir: "data/logs"
+registered_faces_dir: "data/registered_faces"
+registered_voices_dir: "data/registered_voices"
+fingerprint_images_dir: "data/fingerprint_images"
+models_dir: "models"
