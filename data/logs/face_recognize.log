@@ -1,6 +1,11 @@
-2026-11-19 17:06:01 | INFO | run_face | 设备信息: {'onnxruntime_version': '1.24.4', 'available_providers': ['DmlExecutionProvider', 'CPUExecutionProvider'], 'registered_dll_dirs': ['D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cublas\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cuda_nvrtc\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cuda_runtime\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cudnn\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\cufft\\bin', 'D:\\mutimodel_demo\\.venv\\Lib\\site-packages\\nvidia\\nvjitlink\\bin'], 'preload_dlls_ok': True}
-2026-11-19 17:06:01 | INFO | run_face | CUDA 可用: False
-2026-11-19 17:06:09 | INFO | face.detector | UniFace RetinaFace 检测器已加载, providers=['DmlExecutionProvider', 'CPUExecutionProvider']
-2026-11-19 17:06:11 | INFO | face.recognizer | ArcFace 识别器已加载, providers=['DmlExecutionProvider', 'CPUExecutionProvider']
-2026-11-19 17:06:11 | INFO | face.gallery | 注册库已加载: 1 人
-2026-11-19 17:06:11 | INFO | run_face | CSV 日志: D:\mutimodel_demo\data\logs\face_detection.csv
+Traceback (most recent call last):
+  File "D:\mutimodel_demo\scripts\run_face.py", line 246, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "D:\mutimodel_demo\scripts\run_face.py", line 48, in main
+    logger.info("设备信息: %s", describe_devices())
+                                ^^^^^^^^^^^^^^^^^^
+  File "D:\mutimodel_demo\src\common\device.py", line 114, in describe_devices
+    info["onnxruntime_version"] = ort.__version__
+                                  ^^^^^^^^^^^^^^^
+AttributeError: module 'onnxruntime' has no attribute '__version__'

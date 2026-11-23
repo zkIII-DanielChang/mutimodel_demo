@@ -1,0 +1,2 @@
+# 忽略里面的模型
+/.venv/Lib/site-packages/*

@@ -1,0 +1,14 @@
+# 这里记录遇到的问题
+
+# 20261123
+
+
+# 之前的
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+torchvision 0.20.1+cu121 requires torch==2.5.1+cu121, but you have torch 2.15.0+cpu which is incompatible.
+
+# 2142
+AttributeError: module 'onnxruntime' has no attribute 'get_available_providers'
+
+# 2159
+标题打错了！是multimodel...
