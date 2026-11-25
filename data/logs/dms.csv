@@ -1,0 +1,4 @@
+timestamp,modality,metric,value,decision
+2026-11-26T00:10:34.273,dms,state,normal,正常驾驶
+2026-11-26T00:10:34.273,dms,face_detected,0,no face
+2026-11-26T00:10:34.273,dms,quality_ok,0,no face

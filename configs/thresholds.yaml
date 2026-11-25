@@ -1,0 +1,13 @@
+face_detection_score: 0.5
+face_recognition_similarity: 0.6
+
+# DMS 演示初始阈值，需根据摄像头位置和驾驶员实际标定
+dms_ear_threshold: 0.21
+dms_mar_threshold: 0.55
+dms_distraction_yaw: 25.0
+dms_distraction_pitch: 20.0
+dms_distraction_seconds: 2.0
+dms_drowsy_closed_seconds: 0.8
+dms_severe_closed_seconds: 1.5
+dms_yawn_seconds: 1.0
+dms_unavailable_seconds: 2.0

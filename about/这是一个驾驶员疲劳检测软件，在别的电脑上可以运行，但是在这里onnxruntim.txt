@@ -1,0 +1,7 @@
+     这是一个驾驶员疲劳检测软件，在别的电脑上可以运行，但是在这里onnxruntime-directml有问题，帮我解决环境问题，让它能运行
+
+(.venv) D:\mutimodel_demo>python -c "import onnxruntime as ort; print(ort.get_available_providers())" 
+Traceback (most recent call last):                                                                    
+  File "<string>", line 1, in <module>                                                                
+AttributeError: module 'onnxruntime' has no attribute 'get_available_providers'                       
+         

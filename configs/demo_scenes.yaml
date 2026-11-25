@@ -1,0 +1,105 @@
+# 车载演示场景配置
+# 每个场景定义：激活的模态、视频窗口、并行面板、旁白提示
+
+scenes:
+  - id: 1
+    name: "上车认证"
+    duration: "1 min"
+    video_modality: "face_recognize"
+    parallel_modalities: ["fingerprint"]
+    narrator: "人脸识别完成驾驶员身份认证，指纹比对作为启动授权的二次确认。"
+
+  - id: 2
+    name: "驾驶监测"
+    duration: "1.5 min"
+    video_modality: "fatigue"
+    parallel_modalities: []
+    narrator: "疲劳检测综合闭眼时长、眨眼频率和打哈欠频率，分级为清醒、轻度疲劳、重度疲劳。"
+
+  - id: 3
+    name: "手势控制"
+    duration: "1 min"
+    video_modality: "gesture"
+    parallel_modalities: []
+    narrator: "手势识别让驾驶员手不离方向盘即可控制车载功能。"
+
+  - id: 4
+    name: "语音指令"
+    duration: "1.5 min"
+    video_modality: null
+    parallel_modalities: ["asr", "voiceprint"]
+    narrator: "语音识别把驾驶员指令转成文本，再与预定义指令集做模糊匹配。"
+
+  - id: 5
+    name: "复盘"
+    duration: "30 s"
+    video_modality: null
+    parallel_modalities: []
+    narrator: "所有模态的分析结果写入统一字段的 CSV，带毫秒时间戳。"
+
+# 模态定义：每个模态的命令、类型、所属组
+# type: video（独占摄像头）/ panel（不占摄像头）/ gui（独立 GUI 窗口）
+# group: 视频模态互斥组，同组只能运行一个
+modalities:
+  face_recognize:
+    label: "人脸识别"
+    type: video
+    group: face
+    command: ["python", "scripts/run_face.py", "--backend", "uniface", "--camera", "0", "--recognize", "--prefer-cuda"]
+    csv: "face_detection.csv"
+
+  head_pose:
+    label: "头部姿态"
+    type: video
+    group: face
+    command: ["python", "scripts/run_face.py", "--backend", "uniface", "--camera", "0", "--head-pose", "--prefer-cuda"]
+    csv: "face_detection.csv"
+
+  gaze:
+    label: "眼动追踪"
+    type: video
+    group: face
+    command: ["python", "scripts/run_face.py", "--backend", "uniface", "--camera", "0", "--head-pose", "--gaze", "--gaze-interval", "5", "--prefer-cuda"]
+    csv: "face_detection.csv"
+
+  gesture:
+    label: "手势识别"
+    type: video
+    group: hand
+    command: ["python", "scripts/run_gesture.py", "--camera", "0"]
+    csv: "gesture.csv"
+
+  fatigue:
+    label: "疲劳检测"
+    type: video
+    group: fatigue
+    command: ["python", "scripts/run_fatigue.py", "--camera", "0"]
+    csv: "fatigue.csv"
+
+  emotion:
+    label: "表情识别"
+    type: video
+    group: fatigue
+    command: ["python", "scripts/run_fatigue.py", "--camera", "0"]
+    csv: "fatigue.csv"
+
+  asr:
+    label: "语音识别"
+    type: panel
+    group: audio
+    command: ["python", "scripts/run_asr.py"]
+    csv: "asr.csv"
+
+  voiceprint:
+    label: "声纹识别"
+    type: gui
+    group: audio
+    command: ["python", "scripts/voiceprint_demo.py"]
+    csv: "voiceprint.csv"
+
+  fingerprint:
+    label: "指纹识别"
+    type: gui
+    group: bio
+    command: ["python", "scripts/fingerprint_demo.py"]
+    csv: "fingerprint.csv"

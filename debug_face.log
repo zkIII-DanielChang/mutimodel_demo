@@ -1,0 +1,8 @@
+2026-11-09 01:20:14 | INFO | run_face | 设备信息: {'onnxruntime_version': '1.31.1', 'available_providers': ['AzureExecutionProvider', 'CPUExecutionProvider']}
+2026-11-09 01:20:14 | INFO | run_face | CUDA 可用: False
+2026-11-09 01:20:18 | INFO | face.detector | UniFace RetinaFace 检测器已加载, providers=['CPUExecutionProvider']
+2026-11-09 01:20:19 | INFO | face.recognizer | ArcFace 识别器已加载, providers=['CPUExecutionProvider']
+2026-11-09 01:20:19 | INFO | face.gallery | 注册库已加载: 1 人
+2026-11-09 01:20:20 | INFO | run_face | CSV 日志: D:\mutimodel_demo\data\logs\face_detection.csv
+2026-11-09 01:20:36 | INFO | run_face | 达到 max_frames=60，退出
+2026-11-09 01:20:37 | INFO | run_face | 共处理 60 帧

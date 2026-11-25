@@ -1,0 +1,7 @@
+WARNING: Logging before InitGoogle() is written to STDERR
+W0000 00:00:1795446441.353244   29624 face_landmarker_graph.cc:181] Sets FaceBlendshapesGraph acceleration to xnnpack by default.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1795446441.359980   25512 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1795446441.370132   25512 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+2026-11-23 23:07:21 | INFO | run_fatigue | Face Landmarker 已加载: D:\mutimodel_demo\models\face_landmarker.task
+2026-11-23 23:07:21 | INFO | run_fatigue | CSV 日志: D:\mutimodel_demo\data\logs\fatigue.csv
