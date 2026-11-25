@@ -2273,3 +2273,11 @@ timestamp,modality,metric,value,decision
 2026-11-26T00:15:51.350,voiceprint,similarity,0.6509,
 2026-11-26T00:15:52.775,voiceprint,speaker,ZDC,matched
 2026-11-26T00:15:52.775,voiceprint,similarity,0.6880,
+2026-11-26T00:15:55.867,voiceprint,speaker,ZDC,matched
+2026-11-26T00:15:55.867,voiceprint,similarity,0.6182,
+2026-11-26T00:15:58.890,voiceprint,speaker,ZDC,matched
+2026-11-26T00:15:58.890,voiceprint,similarity,0.6927,
+2026-11-26T00:16:00.725,voiceprint,speaker,ZDC,matched
+2026-11-26T00:16:00.726,voiceprint,similarity,0.5688,
+2026-11-26T00:16:06.464,voiceprint,speaker,ZDC,matched
+2026-11-26T00:16:06.465,voiceprint,similarity,0.6360,
