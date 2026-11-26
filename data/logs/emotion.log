@@ -3,6 +3,6 @@ W0000 00:00:1795624053.531998   15164 face_landmarker_graph.cc:181] Sets FaceBle
 INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
 W0000 00:00:1795624053.545902   33344 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
 W0000 00:00:1795624053.566392   32448 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
-2026-11-26 00:27:33 | INFO | run_fatigue | Face Landmarker ÒÑ¼ÓÔØ: D:\mutimodel_demo\models\face_landmarker.task
-2026-11-26 00:27:34 | INFO | run_fatigue | CSV ÈÕÖ¾: D:\mutimodel_demo\data\logs\fatigue.csv
-2026-11-26 00:27:34 | INFO | run_fatigue | ¹²´¦Àí 0 Ö¡
+2026-11-26 00:27:33 | INFO | run_fatigue | Face Landmarker ï¿½Ñ¼ï¿½ï¿½ï¿½: D:\mutimodel_demo\models\face_landmarker.task
+2026-11-26 00:27:34 | INFO | run_fatigue | CSV ï¿½ï¿½Ö¾: D:\mutimodel_demo\data\logs\fatigue.csv
+2026-11-26 00:27:34 | INFO | run_fatigue | ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0 Ö¡

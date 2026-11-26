@@ -3,7 +3,7 @@ Traceback (most recent call last):
     sys.exit(main())
              ^^^^^^
   File "D:\mutimodel_demo\scripts\run_face.py", line 48, in main
-    logger.info("设备信息: %s", describe_devices())
+    logger.info("锟借备锟斤拷息: %s", describe_devices())
                                 ^^^^^^^^^^^^^^^^^^
   File "D:\mutimodel_demo\src\common\device.py", line 114, in describe_devices
     info["onnxruntime_version"] = ort.__version__

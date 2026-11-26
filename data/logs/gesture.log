@@ -17,7 +17,7 @@ INFO: [environment.cc:36] Creating LiteRT environment with options
 INFO: [accelerator_registry.cc:54] RegisterAccelerator: ptr=0000020E079DE9B0, name=CpuAccelerator
 INFO: [cpu_registry.cc:75] XNNPACK CPU accelerator registered.
 INFO: [compiled_model.cc:1022] Flatbuffer model initialized directly from incoming litert model.
-2026-11-23 23:06:25 | INFO | gesture.hand_recognizer | MediaPipe ÊÖÊÆÊ¶±ðÆ÷ÒÑ¼ÓÔØ: D:\mutimodel_demo\models\gesture_recognizer.task
-2026-11-23 23:06:26 | INFO | run_gesture | CSV ÈÕÖ¾: D:\mutimodel_demo\data\logs\gesture.csv
+2026-11-23 23:06:25 | INFO | gesture.hand_recognizer | MediaPipe ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¼ï¿½ï¿½ï¿½: D:\mutimodel_demo\models\gesture_recognizer.task
+2026-11-23 23:06:26 | INFO | run_gesture | CSV ï¿½ï¿½Ö¾: D:\mutimodel_demo\data\logs\gesture.csv
 W0000 00:00:1795446386.980391   18284 inference_runner_litert.cc:1433] Input tensor memory is not aligned according to LiteRt's memory alignment requirements. Reallocating memory and copying data.
 W0000 00:00:1795446386.998544   24212 landmark_projection_calculator.cc:81] Using NORM_RECT without IMAGE_DIMENSIONS is only supported for the square ROI. Provide IMAGE_DIMENSIONS or use PROJECTION_MATRIX.
