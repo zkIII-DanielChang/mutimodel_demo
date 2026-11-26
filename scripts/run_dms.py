@@ -231,7 +231,7 @@ def main() -> int:
                 ok, frame = cap.read()
                 if not ok:
                     logger.error("摄像头读取失败")
-                    break
+                    return 1
                 if mirror:
                     frame = cv2.flip(frame, 1)
 
@@ -321,12 +321,10 @@ def main() -> int:
                 csv_logger.log("dms", "state", state, state_info["message"])
                 csv_logger.log("dms", "face_detected", int(face_detected), quality_reason)
                 csv_logger.log("dms", "quality_ok", int(quality_ok), quality_reason)
-                if ear is not None:
-                    csv_logger.log("dms", "ear", f"{ear:.5f}", "")
-                    csv_logger.log("dms", "mar", f"{mar:.5f}", "")
-                if yaw is not None:
-                    csv_logger.log("dms", "head_yaw", f"{yaw:.3f}", "")
-                    csv_logger.log("dms", "head_pitch", f"{pitch:.3f}", "")
+                csv_logger.log("dms", "ear", f"{ear:.5f}" if ear is not None else "")
+                csv_logger.log("dms", "mar", f"{mar:.5f}" if mar is not None else "")
+                csv_logger.log("dms", "head_yaw", f"{yaw:.3f}" if yaw is not None else "")
+                csv_logger.log("dms", "head_pitch", f"{pitch:.3f}" if pitch is not None else "")
                 if state_info["changed"]:
                     csv_logger.log("dms", "event", state, state_info["message"])
                     logger.info("DMS 状态：%s", DISPLAY_STATE[state])

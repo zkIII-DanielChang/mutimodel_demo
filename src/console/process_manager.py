@@ -1,23 +1,14 @@
-"""模态子进程管理：启动、停止、状态查询。
+"""按设备互斥管理演示子进程。"""
 
-视频模态同组互斥（group 相同只能运行一个），切换时先 terminate 再启动。
-停止后等待摄像头释放（Windows 上有 1–2 秒延迟）。
-
-关键：使用 CREATE_NEW_CONSOLE 让子进程拥有独立控制台，OpenCV 窗口才能创建。
-透明面板问题由各 run_*.py 里的 cv2.namedWindow(..., WINDOW_NORMAL) 解决。
-子进程输出重定向到 data/logs/{key}.log，方便排查。
-"""
-
+import os
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Optional
 
 from src.common.logger import get_logger
 
 logger = get_logger("console.process_manager")
-
 CAMERA_RELEASE_WAIT = 2.5
 
 
@@ -26,54 +17,45 @@ class ModalityProcess:
         self.key = key
         self.label = config["label"]
         self.type = config["type"]
-        self.group = config["group"]
+        self.resource = "camera" if self.type == "video" else config.get("resource")
         self.command = config["command"]
         self.csv = config.get("csv", "")
         self.project_root = project_root
         self.log_dir = log_dir
-        self.process: Optional[subprocess.Popen] = None
+        self.process = None
         self.status = "idle"
-        self.started_at: Optional[float] = None
+        self.started_at = None
         self._log_file = None
 
     def start(self) -> bool:
-        if self.process is not None and self.process.poll() is None:
-            logger.info("%s 已在运行", self.label)
-            return False
+        if self.is_running():
+            return True
         try:
-            creationflags = 0
-            if sys.platform == "win32":
-                creationflags = subprocess.CREATE_NEW_CONSOLE
-
-            cmd = [sys.executable] + self.command[1:]
-
             self.log_dir.mkdir(parents=True, exist_ok=True)
-            log_path = self.log_dir / f"{self.key}.log"
-            self._log_file = open(log_path, "w", encoding="utf-8")
-
+            self._log_file = (self.log_dir / f"{self.key}.log").open("w", encoding="utf-8")
+            self.started_at = time.time()
             self.process = subprocess.Popen(
-                cmd,
-                cwd=str(self.project_root),
-                creationflags=creationflags,
+                [sys.executable, "-u", *self.command[1:]],
+                cwd=self.project_root,
+                creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == "win32" else 0,
                 stdout=self._log_file,
                 stderr=subprocess.STDOUT,
+                env={**os.environ, "PYTHONIOENCODING": "utf-8"},
             )
             self.status = "running"
-            self.started_at = time.time()
-            logger.info("启动 %s: %s", self.label, " ".join(cmd))
+            logger.info("启动 %s", self.label)
             return True
-        except Exception as e:
+        except OSError as exc:
             self.status = "error"
-            logger.error("启动 %s 失败: %s", self.label, e)
+            self.started_at = None
             self._close_log()
+            logger.error("启动 %s 失败：%s", self.label, exc)
             return False
 
-    def stop(self, wait_camera: bool = False) -> bool:
-        if self.process is None or self.process.poll() is not None:
-            self._close_log()
-            self.process = None
+    def stop(self) -> bool:
+        if not self.is_running():
             self.status = "idle"
-            return False
+            return True
         try:
             self.process.terminate()
             try:
@@ -81,99 +63,84 @@ class ModalityProcess:
             except subprocess.TimeoutExpired:
                 self.process.kill()
                 self.process.wait(timeout=2)
-            self.process = None
-            self.status = "idle"
-            self.started_at = None
-            self._close_log()
-            logger.info("停止 %s", self.label)
-            if wait_camera:
-                time.sleep(CAMERA_RELEASE_WAIT)
-            return True
-        except Exception as e:
-            logger.error("停止 %s 失败: %s", self.label, e)
-            self.status = "error"
-            return False
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            if self.is_running():
+                self.status = "error"
+                logger.error("停止 %s 失败：%s", self.label, exc)
+                return False
+        self._finish("idle")
+        return True
 
     def _close_log(self):
-        if self._log_file:
-            try:
-                self._log_file.close()
-            except Exception:
-                pass
+        if self._log_file is not None:
+            self._log_file.close()
             self._log_file = None
+
+    def _finish(self, status):
+        self.process = None
+        self.started_at = None
+        self.status = status
+        self._close_log()
 
     def is_running(self) -> bool:
         if self.process is None:
             return False
-        if self.process.poll() is not None:
-            self.process = None
-            if self.status == "running":
-                self.status = "idle"
-            self._close_log()
-            return False
-        return True
-
-    def refresh_status(self) -> str:
-        if self.status in ("starting", "stopping"):
-            return self.status
-        if self.is_running():
-            self.status = "running"
-        elif self.status != "error":
-            self.status = "idle"
-        return self.status
+        code = self.process.poll()
+        if code is None:
+            return True
+        self._finish("idle" if code == 0 else "error")
+        return False
 
 
 class ProcessManager:
-    def __init__(self, modalities_config: Dict[str, dict], project_root: Path, log_dir: Path):
-        self.modalities: Dict[str, ModalityProcess] = {
+    def __init__(self, modalities_config: dict, project_root: Path, log_dir: Path):
+        self.modalities = {
             key: ModalityProcess(key, cfg, project_root, log_dir)
             for key, cfg in modalities_config.items()
         }
+        self.camera_ready_at = 0.0
 
     def start(self, key: str) -> bool:
-        if key not in self.modalities:
-            return False
         target = self.modalities[key]
         if target.is_running():
-            return False
-
-        if target.type == "video":
+            return True
+        if target.resource:
             for other in self.modalities.values():
-                if other.key != key and other.type == "video" and other.group == target.group:
-                    if other.is_running():
-                        logger.info("同组 %s 运行中，先停止", other.label)
-                        other.stop(wait_camera=True)
-                        break
-
-        target.status = "starting"
-        ok = target.start()
-        return ok
+                if other is not target and other.resource == target.resource and other.is_running():
+                    if not self.stop(other.key):
+                        return False
+        if target.resource == "camera":
+            delay = self.camera_ready_at - time.monotonic()
+            if delay > 0:
+                time.sleep(delay)
+        return target.start()
 
     def stop(self, key: str) -> bool:
-        if key not in self.modalities:
+        modality = self.modalities[key]
+        had_camera = modality.resource == "camera" and modality.is_running()
+        if not modality.stop():
             return False
-        target = self.modalities[key]
-        target.status = "stopping"
-        ok = target.stop(wait_camera=(target.type == "video"))
+        if had_camera and sys.platform == "win32":
+            self.camera_ready_at = time.monotonic() + CAMERA_RELEASE_WAIT
+        return True
+
+    def activate(self, keys) -> bool:
+        ok = True
+        for key in self.running_modalities():
+            if key not in keys and not self.stop(key):
+                ok = False
+        for key in keys:
+            if not self.start(key):
+                ok = False
         return ok
 
-    def stop_all_video(self) -> None:
-        for m in self.modalities.values():
-            if m.type == "video" and m.is_running():
-                m.stop(wait_camera=True)
+    def stop_all(self) -> bool:
+        return self.activate(())
 
-    def stop_all(self) -> None:
-        for m in self.modalities.values():
-            if m.is_running():
-                m.stop(wait_camera=False)
-
-    def get_status(self, key: str) -> str:
-        if key not in self.modalities:
-            return "idle"
-        return self.modalities[key].refresh_status()
-
-    def get_all_status(self) -> Dict[str, str]:
-        return {key: m.refresh_status() for key, m in self.modalities.items()}
+    def get_all_status(self) -> dict:
+        for modality in self.modalities.values():
+            modality.is_running()
+        return {key: modality.status for key, modality in self.modalities.items()}
 
     def running_modalities(self) -> list:
-        return [key for key, m in self.modalities.items() if m.is_running()]
+        return [key for key, modality in self.modalities.items() if modality.is_running()]

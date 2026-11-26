@@ -1,98 +1,88 @@
-"""读 CSV 最后 N 行，解析成字典，供右栏指标显示。
-
-带缓存：只有文件 mtime 或 size 变化时才重新读，避免每 500ms 读一次大文件。
-缓存只保留最后 MAX_CACHE_ROWS 行，防止内存无限增长。
-"""
+"""增量读取演示 CSV，只缓存最近的完整记录。"""
 
 import csv
+from collections import deque
+from datetime import datetime
+from time import time
 from pathlib import Path
-from typing import Dict, List, Optional
 
-from src.common.logger import get_logger
+from src.common.csv_logger import CSVLogger
 
-logger = get_logger("console.csv_tailer")
-
-MAX_CACHE_ROWS = 500
-
-# path_str -> (mtime, size, rows)
-_CACHE: Dict[str, tuple] = {}
+_CACHE = {}
 
 
-def _read_cached(csv_path: Path) -> List[Dict[str, str]]:
-    if not csv_path.exists():
-        return []
+def _read_cached(path):
     try:
-        stat = csv_path.stat()
-    except Exception:
-        return []
-    key = str(csv_path)
-    cached = _CACHE.get(key)
-    if cached is not None and cached[0] == stat.st_mtime and cached[1] == stat.st_size:
-        return cached[2]
+        stat = path.stat()
+        identity = (stat.st_dev, stat.st_ino)
+        cached = _CACHE.get(path)
+        if cached and cached[0] == identity and stat.st_size >= cached[1]:
+            _, offset, rows = cached
+        else:
+            offset, rows = 0, deque(maxlen=500)
+        if stat.st_size > offset:
+            with path.open('rb') as f:
+                f.seek(offset)
+                data = f.read(stat.st_size - offset)
+            lines = [line + b'\n' for line in data.split(b'\n')[:-1]]
+            reader = csv.reader((line.decode('utf-8') for line in lines), strict=True)
+            if offset == 0:
+                if next(reader, None) != CSVLogger.FIELDS:
+                    return ()
+                offset = len(lines[0])
+            consumed = reader.line_num
+            try:
+                for record in reader:
+                    offset += sum(map(len, lines[consumed:reader.line_num]))
+                    consumed = reader.line_num
+                    if len(record) == len(CSVLogger.FIELDS):
+                        rows.append(dict(zip(CSVLogger.FIELDS, record)))
+            except csv.Error:
+                # 被引号包住的字段可能跨行；下一次从该记录起点重读。
+                pass
+            _CACHE[path] = (identity, offset, rows)
+        return rows
+    except (OSError, UnicodeError, csv.Error):
+        _CACHE.pop(path, None)
+        return ()
+
+
+def read_last_lines(csv_path: Path, n: int = 10):
+    return list(_read_cached(csv_path))[-n:] if n > 0 else []
+
+
+def _timestamp(row):
     try:
-        with open(csv_path, "r", encoding="utf-8", newline="") as f:
-            all_rows = list(csv.DictReader(f))
-    except Exception as e:
-        logger.debug("读 CSV 失败 %s: %s", csv_path, e)
-        return []
-    rows = all_rows[-MAX_CACHE_ROWS:] if len(all_rows) > MAX_CACHE_ROWS else all_rows
-    _CACHE[key] = (stat.st_mtime, stat.st_size, rows)
-    return rows
+        return datetime.fromisoformat(row['timestamp']).timestamp()
+    except (KeyError, TypeError, ValueError):
+        return 0.0
 
 
-def read_last_lines(csv_path: Path, n: int = 10) -> List[Dict[str, str]]:
-    rows = _read_cached(csv_path)
-    if not rows:
-        return []
-    return rows[-n:] if len(rows) > n else rows
+def latest_metric(csv_path: Path, metric: str):
+    return latest_metrics(csv_path, [metric]).get(metric)
 
 
-def latest_metric(csv_path: Path, metric: str) -> Optional[str]:
-    rows = read_last_lines(csv_path, n=50)
-    for row in reversed(rows):
-        if row.get("metric") == metric:
-            return row.get("value")
-    return None
-
-
-def latest_metrics(csv_path: Path, metrics: List[str]) -> Dict[str, str]:
-    if not metrics:
-        return {}
-    rows = read_last_lines(csv_path, n=100)
-    result: Dict[str, str] = {}
-    for row in reversed(rows):
-        m = row.get("metric")
-        if m in metrics and m not in result:
-            result[m] = row.get("value", "")
+def latest_metrics(csv_path: Path, metrics, *, since=None, max_age=None):
+    cutoff = max(since or 0, time() - max_age if max_age is not None else 0)
+    result = {}
+    for row in reversed(_read_cached(csv_path)):
+        key = row.get('metric')
+        if key in metrics and key not in result and _timestamp(row) >= cutoff:
+            result[key] = row.get('value') or ''
         if len(result) == len(metrics):
             break
     return result
 
 
-def estimate_fps_from_csv(csv_path: Path, window_seconds: float = 1.0) -> Optional[float]:
-    rows = read_last_lines(csv_path, n=200)
-    if len(rows) < 2:
-        return None
-    try:
-        from datetime import datetime
-
-        timestamps = []
-        for row in rows:
-            if row.get("metric") in ("detection", "label", "ear"):
-                ts = row.get("timestamp", "")
-                try:
-                    timestamps.append(datetime.fromisoformat(ts))
-                except Exception:
-                    continue
-        if len(timestamps) < 2:
-            return None
-        span = (timestamps[-1] - timestamps[0]).total_seconds()
-        if span <= 0:
-            return None
-        return len(timestamps) / span
-    except Exception:
-        return None
+def estimate_fps_from_csv(csv_path: Path, window_seconds=1.0, *, since=None, metric=None):
+    cutoff = max(since or 0, time() - window_seconds)
+    allowed = (metric,) if metric else ('detection', 'label', 'ear')
+    times = [_timestamp(row) for row in _read_cached(csv_path) if row.get('metric') in allowed]
+    times = [stamp for stamp in times if stamp >= cutoff]
+    if len(times) > 1 and times[-1] > times[0]:
+        return (len(times) - 1) / (times[-1] - times[0])
+    return None
 
 
-def clear_cache() -> None:
+def clear_cache():
     _CACHE.clear()

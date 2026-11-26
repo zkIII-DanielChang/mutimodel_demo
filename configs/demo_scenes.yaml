@@ -12,9 +12,9 @@ scenes:
   - id: 2
     name: "驾驶监测"
     duration: "1.5 min"
-    video_modality: "fatigue"
+    video_modality: "dms"
     parallel_modalities: []
-    narrator: "疲劳检测综合闭眼时长、眨眼频率和打哈欠频率，分级为清醒、轻度疲劳、重度疲劳。"
+    narrator: "DMS 综合监测人脸可见性、闭眼时长、打哈欠和头部姿态，实时分级提示正常、分心、疲劳和监控不可用。"
 
   - id: 3
     name: "手势控制"
@@ -27,8 +27,8 @@ scenes:
     name: "语音指令"
     duration: "1.5 min"
     video_modality: null
-    parallel_modalities: ["asr", "voiceprint"]
-    narrator: "语音识别把驾驶员指令转成文本，再与预定义指令集做模糊匹配。"
+    parallel_modalities: ["asr"]
+    narrator: "先演示语音指令；再点声纹识别卡片，切换到说话人识别。两者共用麦克风，不同时采集。"
 
   - id: 5
     name: "复盘"
@@ -69,6 +69,13 @@ modalities:
     command: ["python", "scripts/run_gesture.py", "--camera", "0"]
     csv: "gesture.csv"
 
+  dms:
+    label: "驾驶员监控（DMS）"
+    type: video
+    group: driver_monitoring
+    command: ["python", "scripts/run_dms.py"]
+    csv: "dms.csv"
+
   fatigue:
     label: "疲劳检测"
     type: video
@@ -87,6 +94,7 @@ modalities:
     label: "语音识别"
     type: panel
     group: audio
+    resource: microphone
     command: ["python", "scripts/run_asr.py"]
     csv: "asr.csv"
 
@@ -94,6 +102,7 @@ modalities:
     label: "声纹识别"
     type: gui
     group: audio
+    resource: microphone
     command: ["python", "scripts/voiceprint_demo.py"]
     csv: "voiceprint.csv"
 

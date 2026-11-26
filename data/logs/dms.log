@@ -1,0 +1,21 @@
+WARNING: Logging before InitGoogle() is written to STDERR
+W0000 00:00:1795698480.572043    2856 face_landmarker_graph.cc:181] Sets FaceBlendshapesGraph acceleration to xnnpack by default.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+W0000 00:00:1795698480.584775   22012 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1795698480.615431   23640 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+2026-11-26 21:08:02 | INFO | run_dms | DMS 已启动：camera=0，model=D:\mutimodel_demo\models\face_landmarker.task
+2026-11-26 21:08:02 | INFO | run_dms | 按 q 退出，c 校准 pitch，m 切换镜像显示
+2026-11-26 21:08:04 | INFO | run_dms | DMS 状态：DISTRACTED
+2026-11-26 21:08:05 | INFO | run_dms | DMS 状态：NORMAL
+2026-11-26 21:08:12 | INFO | run_dms | DMS 状态：DISTRACTED
+2026-11-26 21:08:24 | INFO | run_dms | DMS 状态：DROWSY
+2026-11-26 21:08:24 | INFO | run_dms | DMS 状态：SEVERE DROWSINESS
+2026-11-26 21:08:27 | INFO | run_dms | DMS 状态：NORMAL
+2026-11-26 21:08:33 | INFO | run_dms | DMS 状态：DROWSY
+2026-11-26 21:08:38 | INFO | run_dms | DMS 状态：DISTRACTED
+2026-11-26 21:08:41 | INFO | run_dms | DMS 状态：DROWSY
+2026-11-26 21:08:42 | INFO | run_dms | DMS 状态：SEVERE DROWSINESS
+2026-11-26 21:08:44 | INFO | run_dms | DMS 状态：DISTRACTED
+2026-11-26 21:08:45 | INFO | run_dms | DMS 状态：NORMAL
+2026-11-26 21:08:47 | INFO | run_dms | DMS 状态：DISTRACTED
+2026-11-26 21:08:50 | INFO | run_dms | DMS 状态：NORMAL
